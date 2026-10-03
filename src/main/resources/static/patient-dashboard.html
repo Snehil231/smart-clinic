@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Patient Dashboard - Smart Clinic</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #f4f7fb;
+            color: #1f2937;
+        }
+
+        .navbar {
+            background: #0f766e;
+            color: white;
+            padding: 18px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar h1 {
+            font-size: 24px;
+        }
+
+        .navbar-right {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .patient-email {
+            font-size: 14px;
+        }
+
+        .logout-btn {
+            background: white;
+            color: #0f766e;
+            border: none;
+            padding: 9px 18px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .welcome {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+            margin-bottom: 25px;
+        }
+
+        .welcome h2 {
+            color: #0f766e;
+            margin-bottom: 8px;
+        }
+
+        .welcome p {
+            color: #64748b;
+        }
+
+        .section {
+            background: white;
+            padding: 28px;
+            border-radius: 12px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+            margin-bottom: 25px;
+        }
+
+        .section h2 {
+            color: #0f766e;
+            margin-bottom: 20px;
+        }
+
+        .search-box {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .search-box input {
+            flex: 1;
+            padding: 13px;
+            border: 1px solid #cbd5e1;
+            border-radius: 7px;
+            font-size: 15px;
+        }
+
+        .search-box button {
+            padding: 13px 24px;
+            background: #0f766e;
+            color: white;
+            border: none;
+            border-radius: 7px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .search-box button:hover {
+            background: #115e59;
+        }
+
+        .doctor-card {
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+            background: #f8fafc;
+        }
+
+        .doctor-card h3 {
+            color: #0f766e;
+            margin-bottom: 12px;
+        }
+
+        .doctor-card p {
+            margin: 7px 0;
+            color: #475569;
+        }
+
+        .doctor-card strong {
+            color: #1f2937;
+        }
+
+        .message {
+            padding: 14px;
+            border-radius: 8px;
+            background: #fef3c7;
+            color: #92400e;
+            display: none;
+            margin-bottom: 18px;
+        }
+
+        .no-result {
+            color: #64748b;
+            padding: 15px 0;
+        }
+
+        @media (max-width: 700px) {
+
+            .navbar {
+                padding: 15px 20px;
+            }
+
+            .navbar-right {
+                gap: 8px;
+            }
+
+            .search-box {
+                flex-direction: column;
+            }
+
+            .search-box button {
+                width: 100%;
+            }
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="navbar">
+
+    <h1>Smart Clinic</h1>
+
+    <div class="navbar-right">
+
+        <span
+            class="patient-email"
+            id="patientEmail">
+            Patient
+        </span>
+
+        <button
+            class="logout-btn"
+            onclick="logout()">
+            Logout
+        </button>
+
+    </div>
+
+</div>
+
+
+<div class="container">
+
+    <div class="welcome">
+
+        <h2>Patient Dashboard</h2>
+
+        <p>
+            Search for doctors by name and view their details.
+        </p>
+
+    </div>
+
+
+    <div class="section">
+
+        <h2>Find a Doctor</h2>
+
+        <div class="search-box">
+
+            <input
+                type="text"
+                id="doctorName"
+                placeholder="Enter doctor name"
+            >
+
+            <button onclick="searchDoctor()">
+                Search Doctor
+            </button>
+
+        </div>
+
+        <div
+            id="message"
+            class="message">
+        </div>
+
+        <div id="results">
+
+            <p class="no-result">
+                Enter a doctor's name to search.
+            </p>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+    const patientToken =
+        localStorage.getItem("patientToken");
+
+    const patientEmail =
+        localStorage.getItem("patientEmail");
+
+
+    /*
+     * Require patient login.
+     */
+
+    if (!patientToken || !patientEmail) {
+
+        window.location.href =
+            "patient-login.html";
+
+    }
+
+
+    document.getElementById(
+        "patientEmail"
+    ).textContent = patientEmail || "Patient";
+
+
+    /*
+     * Logout.
+     */
+
+    function logout() {
+
+        localStorage.removeItem(
+            "patientToken"
+        );
+
+        localStorage.removeItem(
+            "patientEmail"
+        );
+
+        window.location.href =
+            "patient-login.html";
+
+    }
+
+
+    /*
+     * Search doctor by name.
+     */
+
+    async function searchDoctor() {
+
+        const name =
+            document.getElementById(
+                "doctorName"
+            ).value.trim();
+
+
+        const results =
+            document.getElementById(
+                "results"
+            );
+
+        const message =
+            document.getElementById(
+                "message"
+            );
+
+
+        message.style.display = "none";
+
+
+        if (!name) {
+
+            results.innerHTML =
+                '<p class="no-result">' +
+                'Please enter a doctor name.' +
+                '</p>';
+
+            return;
+
+        }
+
+
+        try {
+
+            const response =
+                await fetch(
+                    "/api/doctors"
+                );
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    "Unable to load doctors."
+                );
+
+            }
+
+
+            const doctors =
+                await response.json();
+
+
+            /*
+             * Case-insensitive name search.
+             */
+
+            const searchText =
+                name.toLowerCase();
+
+
+            const matches =
+                doctors.filter(
+                    doctor =>
+                        doctor.name &&
+                        doctor.name
+                            .toLowerCase()
+                            .includes(searchText)
+                );
+
+
+            results.innerHTML = "";
+
+
+            if (matches.length === 0) {
+
+                results.innerHTML =
+                    '<p class="no-result">' +
+                    'No doctor found with that name.' +
+                    '</p>';
+
+                return;
+
+            }
+
+
+            matches.forEach(
+                doctor => {
+
+                    const card =
+                        document.createElement(
+                            "div"
+                        );
+
+                    card.className =
+                        "doctor-card";
+
+
+                    card.innerHTML = `
+
+                        <h3>
+                            ${doctor.name}
+                        </h3>
+
+                        <p>
+                            <strong>
+                                Speciality:
+                            </strong>
+                            ${doctor.speciality || "-"}
+                        </p>
+
+                        <p>
+                            <strong>
+                                Qualification:
+                            </strong>
+                            ${doctor.qualification || "-"}
+                        </p>
+
+                        <p>
+                            <strong>
+                                Experience:
+                            </strong>
+                            ${doctor.experienceYears || 0}
+                            years
+                        </p>
+
+                        <p>
+                            <strong>
+                                Phone:
+                            </strong>
+                            ${doctor.phone || "-"}
+                        </p>
+
+                        <p>
+                            <strong>
+                                Email:
+                            </strong>
+                            ${doctor.email || "-"}
+                        </p>
+
+                    `;
+
+
+                    results.appendChild(card);
+
+                }
+            );
+
+
+        } catch (error) {
+
+            console.error(error);
+
+            message.textContent =
+                "Unable to connect to the server.";
+
+            message.style.display =
+                "block";
+
+        }
+
+    }
+
+
+    /*
+     * Allow Enter key to search.
+     */
+
+    document.getElementById(
+        "doctorName"
+    ).addEventListener(
+        "keydown",
+        function(event) {
+
+            if (event.key === "Enter") {
+
+                searchDoctor();
+
+            }
+
+        }
+    );
+
+</script>
+
+</body>
+
+</html>

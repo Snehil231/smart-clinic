@@ -1,0 +1,1150 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Admin Dashboard - Smart Clinic</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f7fb;
+            color: #1f2937;
+        }
+
+        .navbar {
+            background: #0f766e;
+            color: white;
+            padding: 18px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .logout {
+            background: white;
+            color: #0f766e;
+            border: none;
+            padding: 9px 18px;
+            border-radius: 7px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .logout:hover {
+            background: #f0fdfa;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .welcome {
+            margin-bottom: 30px;
+        }
+
+        .welcome h1 {
+            color: #0f766e;
+            margin-bottom: 8px;
+        }
+
+        .welcome p {
+            color: #64748b;
+        }
+
+        .cards {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-bottom: 35px;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 18px rgba(0, 0, 0, 0.07);
+            flex: 1;
+            min-width: 220px;
+        }
+
+        .card h3 {
+            color: #64748b;
+            margin-bottom: 10px;
+        }
+
+        .card .number {
+            font-size: 30px;
+            font-weight: bold;
+            color: #0f766e;
+        }
+
+        .panel {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 18px rgba(0, 0, 0, 0.07);
+            margin-bottom: 30px;
+        }
+
+        .panel h2 {
+            color: #0f766e;
+            margin-bottom: 25px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group.full {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            margin-bottom: 7px;
+            font-weight: bold;
+        }
+
+        input {
+            padding: 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 7px;
+            font-size: 14px;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #0f766e;
+            box-shadow: 0 0 0 2px rgba(15, 118, 110, 0.1);
+        }
+
+        .btn {
+            margin-top: 20px;
+            background: #0f766e;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 7px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .btn:hover {
+            background: #115e59;
+        }
+
+        .btn:disabled {
+            background: #94a3b8;
+            cursor: not-allowed;
+        }
+
+        #message {
+            margin-top: 15px;
+            font-weight: bold;
+            min-height: 20px;
+        }
+
+        .doctor-list {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        .doctor-list th,
+        .doctor-list td {
+            padding: 12px;
+            border-bottom: 1px solid #e5e7eb;
+            text-align: left;
+        }
+
+        .doctor-list th {
+            background: #f0fdfa;
+            color: #115e59;
+        }
+
+        .doctor-list tr:hover {
+            background: #f8fafc;
+        }
+
+        .loading {
+            color: #64748b;
+            font-style: italic;
+        }
+
+        .error-text {
+            color: #dc2626;
+            font-weight: bold;
+        }
+
+        .success-text {
+            color: #15803d;
+            font-weight: bold;
+        }
+
+        @media (max-width: 700px) {
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-group.full {
+                grid-column: auto;
+            }
+
+            .navbar {
+                padding: 15px 20px;
+            }
+
+            .logo {
+                font-size: 20px;
+            }
+
+            .container {
+                margin: 25px auto;
+            }
+
+            .doctor-list {
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <!-- =========================
+         NAVIGATION BAR
+    ========================== -->
+
+    <nav class="navbar">
+
+        <div class="logo">
+            Smart Clinic — Admin
+        </div>
+
+        <button class="logout" onclick="logout()">
+            Logout
+        </button>
+
+    </nav>
+
+
+    <!-- =========================
+         MAIN CONTAINER
+    ========================== -->
+
+    <div class="container">
+
+
+        <!-- =========================
+             WELCOME SECTION
+        ========================== -->
+
+        <div class="welcome">
+
+            <h1>Admin Dashboard</h1>
+
+            <p>
+                Manage doctors and clinic operations from the administration panel.
+            </p>
+
+        </div>
+
+
+        <!-- =========================
+             STATISTICS
+        ========================== -->
+
+        <div class="cards">
+
+            <div class="card">
+
+                <h3>Total Doctors</h3>
+
+                <div class="number" id="doctorCount">
+                    --
+                </div>
+
+            </div>
+
+
+            <div class="card">
+
+                <h3>Total Patients</h3>
+
+                <div class="number" id="patientCount">
+                    --
+                </div>
+
+            </div>
+
+
+            <div class="card">
+
+                <h3>Total Appointments</h3>
+
+                <div class="number" id="appointmentCount">
+                    --
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =========================
+             ADD DOCTOR PANEL
+        ========================== -->
+
+        <div class="panel">
+
+            <h2>Add New Doctor</h2>
+
+            <form id="doctorForm">
+
+                <div class="form-grid">
+
+
+                    <!-- Doctor Name -->
+
+                    <div class="form-group">
+
+                        <label for="name">
+                            Doctor Name
+                        </label>
+
+                        <input
+                            type="text"
+                            id="name"
+                            placeholder="Enter doctor name"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- Email -->
+
+                    <div class="form-group">
+
+                        <label for="email">
+                            Email
+                        </label>
+
+                        <input
+                            type="email"
+                            id="email"
+                            placeholder="doctor@example.com"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- Password -->
+
+                    <div class="form-group">
+
+                        <label for="password">
+                            Password
+                        </label>
+
+                        <input
+                            type="password"
+                            id="password"
+                            placeholder="Enter password"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- Phone -->
+
+                    <div class="form-group">
+
+                        <label for="phone">
+                            Phone
+                        </label>
+
+                        <input
+                            type="text"
+                            id="phone"
+                            placeholder="Phone number"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- Speciality -->
+
+                    <div class="form-group">
+
+                        <label for="speciality">
+                            Speciality
+                        </label>
+
+                        <input
+                            type="text"
+                            id="speciality"
+                            placeholder="e.g. Cardiology"
+                            required
+                        >
+
+                    </div>
+
+
+                    <!-- Qualification -->
+
+                    <div class="form-group">
+
+                        <label for="qualification">
+                            Qualification
+                        </label>
+
+                        <input
+                            type="text"
+                            id="qualification"
+                            placeholder="e.g. MBBS, MD"
+                        >
+
+                    </div>
+
+
+                    <!-- Experience -->
+
+                    <div class="form-group">
+
+                        <label for="experienceYears">
+                            Experience (Years)
+                        </label>
+
+                        <input
+                            type="number"
+                            id="experienceYears"
+                            min="0"
+                            value="0"
+                        >
+
+                    </div>
+
+                </div>
+
+
+                <button
+                    class="btn"
+                    id="addDoctorButton"
+                    type="submit"
+                >
+                    Add Doctor
+                </button>
+
+            </form>
+
+
+            <div id="message"></div>
+
+        </div>
+
+
+        <!-- =========================
+             REGISTERED DOCTORS
+        ========================== -->
+
+        <div class="panel">
+
+            <h2>Registered Doctors</h2>
+
+            <table class="doctor-list">
+
+                <thead>
+
+                    <tr>
+
+                        <th>ID</th>
+
+                        <th>Name</th>
+
+                        <th>Speciality</th>
+
+                        <th>Email</th>
+
+                        <th>Experience</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody id="doctorTableBody">
+
+                    <tr>
+
+                        <td
+                            colspan="5"
+                            class="loading"
+                        >
+                            Loading doctors...
+                        </td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+    </div>
+
+
+    <!-- =========================
+         JAVASCRIPT
+    ========================== -->
+
+    <script>
+
+
+        /* ==========================================
+           ADMIN TOKEN
+        ========================================== */
+
+        const token = localStorage.getItem("adminToken");
+
+
+        /*
+         * If admin is not logged in,
+         * redirect to login page.
+         */
+
+        if (!token) {
+
+            window.location.href = "admin-login.html";
+
+        }
+
+
+        /* ==========================================
+           HELPER FUNCTION
+        ========================================== */
+
+        function setMessage(message, type) {
+
+            const messageElement =
+                document.getElementById("message");
+
+            messageElement.textContent = message;
+
+            messageElement.className =
+                type === "success"
+                    ? "success-text"
+                    : "error-text";
+
+        }
+
+
+        /* ==========================================
+           LOAD DOCTORS
+        ========================================== */
+
+        async function loadDoctors() {
+
+            const table =
+                document.getElementById("doctorTableBody");
+
+            try {
+
+                const response =
+                    await fetch("/api/doctors");
+
+
+                if (!response.ok) {
+
+                    throw new Error(
+                        "Unable to load doctors"
+                    );
+
+                }
+
+
+                const doctors =
+                    await response.json();
+
+
+                table.innerHTML = "";
+
+
+                if (!Array.isArray(doctors) || doctors.length === 0) {
+
+                    table.innerHTML = `
+                        <tr>
+                            <td colspan="5">
+                                No doctors registered.
+                            </td>
+                        </tr>
+                    `;
+
+                    document.getElementById("doctorCount")
+                        .textContent = "0";
+
+                    return;
+
+                }
+
+
+                doctors.forEach(doctor => {
+
+                    const row =
+                        document.createElement("tr");
+
+
+                    row.innerHTML = `
+
+                        <td>${doctor.id ?? "-"}</td>
+
+                        <td>${doctor.name ?? "-"}</td>
+
+                        <td>${doctor.speciality ?? "-"}</td>
+
+                        <td>${doctor.email ?? "-"}</td>
+
+                        <td>${doctor.experienceYears ?? 0} years</td>
+
+                    `;
+
+
+                    table.appendChild(row);
+
+                });
+
+
+                document.getElementById("doctorCount")
+                    .textContent = doctors.length;
+
+
+            } catch (error) {
+
+                console.error(
+                    "Doctor loading error:",
+                    error
+                );
+
+
+                table.innerHTML = `
+                    <tr>
+                        <td colspan="5" class="error-text">
+                            Unable to load doctors.
+                        </td>
+                    </tr>
+                `;
+
+                document.getElementById("doctorCount")
+                    .textContent = "--";
+
+            }
+
+        }
+
+
+        /* ==========================================
+           LOAD PATIENT COUNT
+        ========================================== */
+
+        async function loadPatients() {
+
+            try {
+
+                const response =
+                    await fetch("/api/patients");
+
+
+                if (!response.ok) {
+
+                    throw new Error(
+                        "Unable to load patients"
+                    );
+
+                }
+
+
+                const patients =
+                    await response.json();
+
+
+                document.getElementById("patientCount")
+                    .textContent =
+                    Array.isArray(patients)
+                        ? patients.length
+                        : "--";
+
+
+            } catch (error) {
+
+                console.error(
+                    "Patient loading error:",
+                    error
+                );
+
+
+                document.getElementById("patientCount")
+                    .textContent = "--";
+
+            }
+
+        }
+
+
+        /* ==========================================
+           LOAD APPOINTMENT COUNT
+        ========================================== */
+
+        async function loadAppointments() {
+
+            try {
+
+                const response =
+                    await fetch("/api/appointments");
+
+
+                if (!response.ok) {
+
+                    throw new Error(
+                        "Unable to load appointments"
+                    );
+
+                }
+
+
+                const appointments =
+                    await response.json();
+
+
+                document.getElementById("appointmentCount")
+                    .textContent =
+                    Array.isArray(appointments)
+                        ? appointments.length
+                        : "--";
+
+
+            } catch (error) {
+
+                console.error(
+                    "Appointment loading error:",
+                    error
+                );
+
+
+                document.getElementById("appointmentCount")
+                    .textContent = "--";
+
+            }
+
+        }
+
+
+        /* ==========================================
+           ADD DOCTOR
+        ========================================== */
+
+        document
+            .getElementById("doctorForm")
+            .addEventListener(
+                "submit",
+                async function(event) {
+
+                    event.preventDefault();
+
+
+                    const message =
+                        document.getElementById("message");
+
+                    const addDoctorButton =
+                        document.getElementById(
+                            "addDoctorButton"
+                        );
+
+
+                    /*
+                     * Clear previous message.
+                     */
+
+                    message.textContent = "";
+                    message.className = "";
+
+
+                    /*
+                     * Check admin token.
+                     */
+
+                    if (!token) {
+
+                        setMessage(
+                            "Admin session expired. Please login again.",
+                            "error"
+                        );
+
+                        setTimeout(() => {
+
+                            window.location.href =
+                                "admin-login.html";
+
+                        }, 1500);
+
+                        return;
+
+                    }
+
+
+                    /*
+                     * Collect form data.
+                     */
+
+                    const doctor = {
+
+                        name:
+                            document
+                                .getElementById("name")
+                                .value
+                                .trim(),
+
+                        email:
+                            document
+                                .getElementById("email")
+                                .value
+                                .trim(),
+
+                        password:
+                            document
+                                .getElementById("password")
+                                .value,
+
+                        phone:
+                            document
+                                .getElementById("phone")
+                                .value
+                                .trim(),
+
+                        speciality:
+                            document
+                                .getElementById("speciality")
+                                .value
+                                .trim(),
+
+                        qualification:
+                            document
+                                .getElementById("qualification")
+                                .value
+                                .trim(),
+
+                        experienceYears:
+                            Number(
+                                document
+                                    .getElementById(
+                                        "experienceYears"
+                                    )
+                                    .value
+                            )
+
+                    };
+
+
+                    /*
+                     * Disable button while request
+                     * is being processed.
+                     */
+
+                    addDoctorButton.disabled = true;
+
+                    addDoctorButton.textContent =
+                        "Adding Doctor...";
+
+
+                    try {
+
+                        /*
+                         * IMPORTANT:
+                         * Admin creates doctors through
+                         * the protected admin endpoint.
+                         */
+
+                        const response =
+                            await fetch(
+                                "/api/admin/doctors",
+                                {
+                                    method: "POST",
+
+                                    headers: {
+
+                                        "Content-Type":
+                                            "application/json",
+
+                                        "Authorization":
+                                            "Bearer " + token
+
+                                    },
+
+                                    body:
+                                        JSON.stringify(doctor)
+
+                                }
+                            );
+
+
+                        /*
+                         * Try to read the server response.
+                         */
+
+                        let responseData = null;
+
+                        const contentType =
+                            response.headers.get(
+                                "content-type"
+                            );
+
+
+                        if (
+                            contentType &&
+                            contentType.includes(
+                                "application/json"
+                            )
+                        ) {
+
+                            responseData =
+                                await response.json();
+
+                        } else {
+
+                            responseData =
+                                await response.text();
+
+                        }
+
+
+                        /* ==========================
+                           SUCCESS
+                        =========================== */
+
+                        if (response.ok) {
+
+                            setMessage(
+                                "Doctor added successfully.",
+                                "success"
+                            );
+
+
+                            /*
+                             * Clear form.
+                             */
+
+                            document
+                                .getElementById("doctorForm")
+                                .reset();
+
+
+                            /*
+                             * Restore default
+                             * experience value.
+                             */
+
+                            document
+                                .getElementById(
+                                    "experienceYears"
+                                )
+                                .value = "0";
+
+
+                            /*
+                             * Refresh doctor list
+                             * and doctor count.
+                             */
+
+                            await loadDoctors();
+
+
+                            /*
+                             * Refresh statistics.
+                             */
+
+                            await loadPatients();
+
+                            await loadAppointments();
+
+                        }
+
+
+                        /* ==========================
+                           UNAUTHORIZED
+                        =========================== */
+
+                        else if (
+                            response.status === 401 ||
+                            response.status === 403
+                        ) {
+
+                            setMessage(
+                                "Admin authorization failed. Please login again.",
+                                "error"
+                            );
+
+
+                            localStorage.removeItem(
+                                "adminToken"
+                            );
+
+                            localStorage.removeItem(
+                                "adminEmail"
+                            );
+
+
+                            setTimeout(() => {
+
+                                window.location.href =
+                                    "admin-login.html";
+
+                            }, 1500);
+
+                        }
+
+
+                        /* ==========================
+                           OTHER SERVER ERROR
+                        =========================== */
+
+                        else {
+
+                            let errorMessage =
+                                "Unable to add doctor.";
+
+
+                            if (
+                                responseData &&
+                                typeof responseData === "object"
+                            ) {
+
+                                errorMessage =
+                                    responseData.message ||
+                                    errorMessage;
+
+                            }
+
+                            else if (
+                                typeof responseData === "string" &&
+                                responseData.trim()
+                            ) {
+
+                                errorMessage =
+                                    responseData;
+
+                            }
+
+
+                            setMessage(
+                                errorMessage,
+                                "error"
+                            );
+
+                        }
+
+
+                    } catch (error) {
+
+                        console.error(
+                            "Add doctor error:",
+                            error
+                        );
+
+
+                        setMessage(
+                            "Server connection failed. Make sure Spring Boot is running.",
+                            "error"
+                        );
+
+                    }
+
+
+                    finally {
+
+                        /*
+                         * Enable button again.
+                         */
+
+                        addDoctorButton.disabled = false;
+
+                        addDoctorButton.textContent =
+                            "Add Doctor";
+
+                    }
+
+                }
+            );
+
+
+        /* ==========================================
+           LOGOUT
+        ========================================== */
+
+        function logout() {
+
+            localStorage.removeItem(
+                "adminToken"
+            );
+
+            localStorage.removeItem(
+                "adminEmail"
+            );
+
+            window.location.href =
+                "index.html";
+
+        }
+
+
+        /* ==========================================
+           INITIAL LOAD
+        ========================================== */
+
+        loadDoctors();
+
+        loadPatients();
+
+        loadAppointments();
+
+
+    </script>
+
+
+</body>
+
+</html>

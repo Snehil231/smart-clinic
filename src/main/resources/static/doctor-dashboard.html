@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctor Dashboard - Smart Clinic</title>
+
+    <style>
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f4f7fb;
+            color: #1f2937;
+        }
+
+        header {
+            background: #0f766e;
+            color: white;
+            padding: 16px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header h1 { margin: 0; font-size: 22px; }
+        header .sub { font-size: 13px; opacity: 0.85; }
+
+        .header-right { display: flex; align-items: center; gap: 16px; font-size: 14px; }
+
+        #logoutButton {
+            background: white;
+            color: #0f766e;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        main { max-width: 1000px; margin: 28px auto; padding: 0 20px; }
+
+        .cards { display: flex; gap: 16px; margin-bottom: 24px; flex-wrap: wrap; }
+
+        .card {
+            flex: 1;
+            min-width: 180px;
+            background: white;
+            border-radius: 10px;
+            padding: 18px 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        }
+
+        .card h3 { margin: 0 0 8px; font-size: 14px; color: #64748b; font-weight: normal; }
+        .card .number { font-size: 30px; font-weight: bold; color: #0f766e; }
+
+        .panel {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        }
+
+        .panel h2 { margin: 0 0 14px; color: #0f766e; font-size: 20px; }
+
+        table { width: 100%; border-collapse: collapse; }
+
+        th, td { text-align: left; padding: 12px 10px; border-bottom: 1px solid #e5e7eb; font-size: 14px; }
+
+        th { background: #f0fdfa; color: #0f766e; }
+
+        .status {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+
+        #message { text-align: center; padding: 20px; color: #64748b; }
+        #message.error { color: #dc2626; font-weight: bold; }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <div>
+            <h1>Smart Clinic</h1>
+            <div class="sub">Doctor Portal</div>
+        </div>
+
+        <div class="header-right">
+            <span id="doctorEmail"></span>
+            <button id="logoutButton">Logout</button>
+        </div>
+    </header>
+
+    <main>
+        <div class="cards">
+            <div class="card">
+                <h3>Total Appointments</h3>
+                <div class="number" id="totalCount">-</div>
+            </div>
+            <div class="card">
+                <h3>Today</h3>
+                <div class="number" id="todayCount">-</div>
+            </div>
+            <div class="card">
+                <h3>Booked</h3>
+                <div class="number" id="bookedCount">-</div>
+            </div>
+        </div>
+
+        <div class="panel">
+            <h2>My Appointments</h2>
+
+            <div id="message">Loading appointments...</div>
+
+            <table id="appointmentTable" style="display: none;">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Time</th>
+                        <th>Patient</th>
+                        <th>Phone</th>
+                        <th>Reason</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="appointmentBody"></tbody>
+            </table>
+        </div>
+    </main>
+
+    <script>
+        const token = localStorage.getItem("doctorToken");
+        const email = localStorage.getItem("doctorEmail");
+
+        // Not logged in -> back to login page
+        if (!token) {
+            window.location.href = "doctor-login.html";
+        }
+
+        document.getElementById("doctorEmail").textContent = email || "";
+
+        function logout() {
+            localStorage.removeItem("doctorToken");
+            localStorage.removeItem("doctorEmail");
+            window.location.href = "doctor-login.html";
+        }
+
+        document.getElementById("logoutButton").addEventListener("click", logout);
+
+        function escapeHtml(value) {
+            const div = document.createElement("div");
+            div.textContent = value == null ? "" : String(value);
+            return div.innerHTML;
+        }
+
+        function sameDay(a, b) {
+            return a.getFullYear() === b.getFullYear() &&
+                   a.getMonth() === b.getMonth() &&
+                   a.getDate() === b.getDate();
+        }
+
+        async function loadAppointments() {
+            const message = document.getElementById("message");
+            const table = document.getElementById("appointmentTable");
+            const body = document.getElementById("appointmentBody");
+
+            try {
+                const response = await fetch("/api/doctors/my-appointments", {
+                    headers: { "Authorization": "Bearer " + token }
+                });
+
+                // Expired or invalid token -> log out
+                if (response.status === 401) {
+                    logout();
+                    return;
+                }
+
+                const data = await response.json();
+
+                if (!response.ok || !data.success) {
+                    message.textContent = data.message || "Could not load appointments";
+                    message.className = "error";
+                    return;
+                }
+
+                const appointments = data.data || [];
+                const now = new Date();
+
+                document.getElementById("totalCount").textContent = appointments.length;
+                document.getElementById("bookedCount").textContent =
+                    appointments.filter(a => a.status === "BOOKED").length;
+                document.getElementById("todayCount").textContent =
+                    appointments.filter(a => sameDay(new Date(a.appointmentTime), now)).length;
+
+                if (appointments.length === 0) {
+                    message.textContent = "No appointments found.";
+                    return;
+                }
+
+                body.innerHTML = appointments.map(a => {
+                    const when = new Date(a.appointmentTime);
+                    return `
+                        <tr>
+                            <td>${when.toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" })}</td>
+                            <td>${when.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })}</td>
+                            <td>${escapeHtml(a.patientName)}</td>
+                            <td>${escapeHtml(a.patientPhone)}</td>
+                            <td>${escapeHtml(a.reason)}</td>
+                            <td><span class="status">${escapeHtml(a.status)}</span></td>
+                        </tr>`;
+                }).join("");
+
+                message.style.display = "none";
+                table.style.display = "table";
+
+            } catch (error) {
+                message.textContent = "Cannot reach the server. Is the backend running?";
+                message.className = "error";
+            }
+        }
+
+        loadAppointments();
+    </script>
+
+</body>
+</html>

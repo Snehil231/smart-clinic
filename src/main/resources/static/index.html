@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Smart Clinic Management System</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f7fb;
+            color: #1f2937;
+        }
+
+        .navbar {
+            background: #0f766e;
+            color: white;
+            padding: 18px 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .hero {
+            text-align: center;
+            padding: 70px 20px 50px;
+        }
+
+        .hero h1 {
+            font-size: 42px;
+            margin-bottom: 15px;
+            color: #0f766e;
+        }
+
+        .hero p {
+            font-size: 18px;
+            color: #64748b;
+            max-width: 700px;
+            margin: auto;
+            line-height: 1.6;
+        }
+
+        .roles {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            flex-wrap: wrap;
+            padding: 30px;
+        }
+
+        .role-card {
+            background: white;
+            width: 280px;
+            padding: 30px;
+            border-radius: 14px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+            text-align: center;
+        }
+
+        .role-card h2 {
+            color: #0f766e;
+            margin-bottom: 12px;
+        }
+
+        .role-card p {
+            color: #64748b;
+            line-height: 1.5;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            display: inline-block;
+            background: #0f766e;
+            color: white;
+            text-decoration: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+
+        .btn:hover {
+            background: #115e59;
+        }
+
+        .features {
+            background: white;
+            padding: 50px 20px;
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .features h2 {
+            color: #0f766e;
+            margin-bottom: 25px;
+        }
+
+        .feature-list {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .feature {
+            padding: 15px 25px;
+            background: #f0fdfa;
+            border-radius: 8px;
+            color: #115e59;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #64748b;
+            font-size: 14px;
+        }
+    </style>
+</head>
+
+<body>
+
+<nav class="navbar">
+    <div class="logo">Smart Clinic</div>
+    <div>Clinic Management System</div>
+</nav>
+
+<section class="hero">
+    <h1>Smart Clinic Management System</h1>
+
+    <p>
+        A digital clinic management platform for managing doctors,
+        patients, appointments, prescriptions and clinic operations.
+    </p>
+</section>
+
+<section class="roles">
+
+    <div class="role-card">
+        <h2>Admin</h2>
+
+        <p>
+            Manage doctors, clinic information and administrative
+            operations.
+        </p>
+
+        <a href="admin-login.html" class="btn">
+            Admin Login
+        </a>
+    </div>
+
+
+    <div class="role-card">
+        <h2>Doctor</h2>
+
+        <p>
+            View appointments, manage availability and create
+            patient prescriptions.
+        </p>
+
+        <a href="doctor-login.html" class="btn">
+            Doctor Login
+        </a>
+    </div>
+
+
+    <div class="role-card">
+        <h2>Patient</h2>
+
+        <p>
+            Search doctors, check availability, book appointments
+            and view appointments.
+        </p>
+
+        <a href="patient-login.html" class="btn">
+            Patient Login
+        </a>
+    </div>
+
+</section>
+
+
+<section class="features">
+
+    <h2>System Features</h2>
+
+    <div class="feature-list">
+
+        <div class="feature">
+            Doctor Management
+        </div>
+
+        <div class="feature">
+            Appointment Booking
+        </div>
+
+        <div class="feature">
+            Doctor Availability
+        </div>
+
+        <div class="feature">
+            Digital Prescriptions
+        </div>
+
+        <div class="feature">
+            Patient Management
+        </div>
+
+        <div class="feature">
+            JWT Authentication
+        </div>
+
+    </div>
+
+</section>
+
+
+<footer>
+    Smart Clinic Management System © 2026
+</footer>
+
+</body>
+</html>
